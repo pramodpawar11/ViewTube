@@ -7,7 +7,7 @@ dotenv.config({
 });
 connectDB()
   .then(() => {
-    app.listen(PORT, () => console.log(`PORT is running of ${PORT}`));
+    app.listen(PORT, () => console.log(`PORT is running on ${PORT}`));
   })
   .catch((error) => {
     console.log("Error occured in databse", error);
