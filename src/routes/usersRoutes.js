@@ -4,6 +4,7 @@ import {
   registerUser,
   loginUser,
   logoutUser,
+  refreshAccessToken,
 } from "../controllers/userController.js";
 import { upload } from "../middlewares/multerMiddleware.js";
 import verifyToken from "../middlewares/authMiddleware.js";
@@ -25,5 +26,7 @@ router.post(
 router.post("/login", loginUser);
 
 router.post("/logout", verifyToken, logoutUser);
+
+router.post("/refresh-token",refreshAccessToken)
 
 export default router;
