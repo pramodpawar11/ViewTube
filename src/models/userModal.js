@@ -69,7 +69,7 @@ userSchema.methods.generateAccessToken = async function () {
 };
 userSchema.methods.generateRefreshToken = async function () {
   const payload = {
-    _id: thid._id,
+    _id: this._id,
   };
   return await jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {
     expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
