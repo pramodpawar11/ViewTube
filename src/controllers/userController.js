@@ -152,4 +152,57 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
       )
     );
 });
-export { registerUser, loginUser, logoutUser,refreshAccessToken };
+
+const updateUserPassword = asyncHandler(async (req, res) => {
+  const { oldpassword, newpassword } = req.body;
+  const user = await User.findById(req.user._id);
+  const isPawwordCorrect = await user.isCorrectPassword(oldpassword);
+  if (!isPawwordCorrect) throw new ApiError(401, "Password is incorrect");
+  user.password = newpassword;
+  await user.save({ validateBeforeSave: false });
+  return res
+    .status(200)
+    .json(ApiResponse(200), {}, "Password updated successfully");
+});
+
+const updateAccountDetails = asyncHandler(async (req, res) => {
+  const { email, userName } = req.body;
+  if (!fullName || !email) throw new ApiError(400, "All fields are required");
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $set: {
+        email,
+        userName,
+      },
+    },
+    { new: true }
+  ).select("-password");
+  res
+    .status(200)
+    .json(ApiResponse(200, { user }, "Details updated successfully"));
+});
+
+const updateAvatar = asyncHandler(async(req,res)=>{
+  const avatarLocalPath = req.file?.path;
+  if(!avatarLocalPath) throw new ApiError(400,"not getting avatar file path");
+  const avatar = await uploadOnCloudinary(avatarLocalPath);
+  if(!avatar.url) throw new ApiError(401,"facing problem while uploading on cloudnary")
+  const user = await User.findById(req.user._id,{
+    $set:{
+      avatar:avatar?.url
+    }
+  },{
+    new:true
+  })
+  res.status(200).json(new ApiResponse(200,user,"Avatar updated successfully"));
+})
+export {
+  registerUser,
+  loginUser,
+  logoutUser,
+  refreshAccessToken,
+  updateAccountDetails,
+  updateUserPassword,
+  updateAvatar
+};
